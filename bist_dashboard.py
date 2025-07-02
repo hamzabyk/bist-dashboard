@@ -1,6 +1,9 @@
 import yfinance as yf
 import pandas as pd
 import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 st.set_page_config(page_title="BIST Dashboard", layout="wide")
 st.title("📊 Borsa İstanbul Dashboard")
@@ -9,9 +12,10 @@ tickers = ["ASELS.IS", "THYAO.IS", "SISE.IS", "KRDMD.IS", "BIMAS.IS"]
 ticker = st.selectbox("Hisse Seçin", tickers)
 
 # Veri çek
-df = yf.download(ticker, period="6mo")
+df = yf.download(ticker, period="6mo", auto_adjust=True)
 
-# 👉 Çok katmanlı sütunları düzleştir
+
+# Çok katmanlı sütunları düzleştir
 if isinstance(df.columns, pd.MultiIndex):
     df.columns = df.columns.droplevel(1)
 
@@ -28,6 +32,7 @@ loss = -delta.where(delta < 0, 0)
 avg_gain = gain.rolling(window=14).mean()
 avg_loss = loss.rolling(window=14).mean()
 rs = avg_gain / avg_loss
+rs = rs.replace([np.inf, -np.inf], np.nan)
 df["RSI"] = 100 - (100 / (1 + rs))
 
 # Grafikler
@@ -40,7 +45,4 @@ st.bar_chart(df["Volume"])
 st.subheader("📉 RSI")
 st.line_chart(df["RSI"])
 
-git init
-git add bist_dashboard.py
-git commit -m "ilk commit"
 
