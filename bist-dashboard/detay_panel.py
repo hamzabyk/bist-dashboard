@@ -44,3 +44,4 @@ def detay_paneli(symbol):
 
     except Exception as e:
         st.error(f"Bir hata oluştu: {e}")
+
